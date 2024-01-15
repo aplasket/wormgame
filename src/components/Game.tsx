@@ -1,4 +1,4 @@
-import { useEffect, useState }from "react";
+import { useEffect, useState } from "react";
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import { Colors } from "../styles/colors";
 import { PanGestureHandler } from "react-native-gesture-handler";
@@ -6,16 +6,17 @@ import { Coordinate, Direction, GestureEventType } from "../types/types";
 import { checkEatsFood } from "../utils/checkEatsFood";
 import { checkGameOver } from "../utils/checkGameOver";
 import { randomFoodPosition } from "../utils/randomFoodPosition";
-import Food from "./Food";
+import Food, { getRandomFruitEmoji } from "./Food";
 import Header from "./Header";
 import Score from "./Score";
 import Snake from "./Snake";
 
 const snakeInitialPosition = [{ x: 5, y: 5 }];
-const foodInitialPosition = { x: 5, y: 20 };
 const gameBounds = { xMin: 0, xMax: 33, yMin: 0, yMax: 53 };
 const moveInterval = 50;
 const scoreIncrement = 10;
+const foodInitialPosition = () => randomFoodPosition(gameBounds.xMax, gameBounds.yMax);
+
 
 export default function Game(): JSX.Element {
   const [ direction, setDirection ] = useState<Direction>(Direction.Right);
@@ -24,6 +25,7 @@ export default function Game(): JSX.Element {
   const [ score, setScore ] = useState<number>(0);
   const [ isGameOver, setIsGameOver ] = useState<boolean>(false);
   const [ isPaused, setIsPaused ] = useState<boolean>(false);
+  const [ fruitEmoji, setFruitEmoji ] = useState<string>(getRandomFruitEmoji())
 
   useEffect(() => {
     if(!isGameOver) {
@@ -39,7 +41,6 @@ export default function Game(): JSX.Element {
     const snakeHead = snake[0];
     const newHead = { ...snakeHead }; // create a new head object to avoid mutating the original head
 
-    // game over
     if (checkGameOver(snakeHead, gameBounds)) {
       setIsGameOver((prev) => !prev);
       return;
@@ -67,6 +68,7 @@ export default function Game(): JSX.Element {
       setFood(randomFoodPosition(gameBounds.xMax, gameBounds.yMax))
       setSnake([newHead, ...snake]);
       setScore(score + scoreIncrement);
+      setFruitEmoji(getRandomFruitEmoji());
     } else {
       setSnake([newHead, ...snake.slice(0, -1)]);
     }
@@ -115,7 +117,9 @@ export default function Game(): JSX.Element {
         </Header>
         <View style={styles.boundaries}>
           <Snake snake={snake} />
-          <Food x={food.x} y={food.y} />
+          <Food x={food.x} y={food.y}>
+            {fruitEmoji}
+          </Food>
         </View>
       </SafeAreaView>
     </PanGestureHandler>
