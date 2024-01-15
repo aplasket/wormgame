@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { SafeAreaView, StyleSheet, View } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { Colors } from '../styles/colors';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { Coordinate, Direction, GestureEventType } from '../types/types';
@@ -7,6 +7,8 @@ import Snake from './Snake';
 import { checkGameOver } from '../utils/checkGameOver';
 import Food from './Food';
 import { checkEatsFood } from '../utils/checkEatsFood';
+import { randomFoodPosition } from '../utils/randomFoodPosition';
+import Header from './Header';
 
 const snakeInitialPosition = [{x: 5, y: 5}];
 const foodInitialPosition = {x: 5, y: 5};
@@ -59,15 +61,14 @@ export default function Game(): JSX.Element {
         break;
     }
 
-    // if eats food
+    // if eats food, grow snake and set score
     if(checkEatsFood(newHead, food, 2)){
+      setFood(randomFoodPosition(gameBounds.xMax, gameBounds.yMax))
       setSnake([newHead, ...snake]);
-      // get another position for food
       setScore(score + scoreIncrement);
+    } else {
+      setSnake([newHead, ...snake.slice(0, -1)]);
     }
-    // grow snake
-
-    setSnake([newHead, ...snake.slice(0, -1)]);
   };
 
   const handleGesture = (event: GestureEventType) => {
@@ -86,11 +87,33 @@ export default function Game(): JSX.Element {
         setDirection(Direction.Up);
       }
     }
-  }
+  };
+
+  const reloadGame = () => {
+    setSnake(snakeInitialPosition);
+    setFood(foodInitialPosition);
+    setIsGameOver(false);
+    setScore(0);
+    setDirection(Direction.Right);
+    setIsPaused(false);
+  };
+
+  const pauseGame = () => {
+    setIsPaused(!isPaused);
+  };
 
   return (
     <PanGestureHandler onGestureEvent={handleGesture}>
       <SafeAreaView style={styles.container}>
+        <Header
+          isPaused={isPaused}
+          pauseGame={pauseGame}
+          reloadGame={reloadGame}
+        >
+          <Text style={styles.text}>
+            {score}
+          </Text>
+        </Header>
         <View style={styles.boundaries}>
           <Snake snake={snake}/>
           <Food x={food.x} y={food.y} />
@@ -112,5 +135,10 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     backgroundColor: Colors.background
+  },
+  text: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: Colors.primary
   }
 });
