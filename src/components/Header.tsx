@@ -37,7 +37,7 @@ export default function Header ({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 0.05,
+    flex: 0.06,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
