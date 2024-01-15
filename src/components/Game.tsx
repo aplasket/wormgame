@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import { Dimensions, SafeAreaView, StyleSheet, View } from "react-native";
 import { Colors } from "../styles/colors";
 import { PanGestureHandler } from "react-native-gesture-handler";
 import { Coordinate, Direction, GestureEventType } from "../types/types";
@@ -15,6 +15,14 @@ const snakeInitialPosition = [{ x: 5, y: 5 }];
 const gameBounds = { xMin: 0, xMax: 33, yMin: 0, yMax: 53 };
 const moveInterval = 50;
 const scoreIncrement = 10;
+
+// const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+// const gameBounds = {
+//   xMin: 0,
+//   xMax: Math.floor(screenWidth),
+//   yMin: 0,
+//   yMax: Math.floor(screenHeight / 13.53), // Adjust the divisor based on your layout
+// };
 const foodInitialPosition = () => randomFoodPosition(gameBounds.xMax, gameBounds.yMax);
 
 
