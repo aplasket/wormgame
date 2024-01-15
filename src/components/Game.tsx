@@ -1,30 +1,31 @@
-import * as React from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import { Colors } from '../styles/colors';
-import { PanGestureHandler } from 'react-native-gesture-handler';
-import { Coordinate, Direction, GestureEventType } from '../types/types';
-import Snake from './Snake';
-import { checkGameOver } from '../utils/checkGameOver';
-import Food from './Food';
-import { checkEatsFood } from '../utils/checkEatsFood';
-import { randomFoodPosition } from '../utils/randomFoodPosition';
-import Header from './Header';
+import { useEffect, useState }from "react";
+import { SafeAreaView, StyleSheet, View } from "react-native";
+import { Colors } from "../styles/colors";
+import { PanGestureHandler } from "react-native-gesture-handler";
+import { Coordinate, Direction, GestureEventType } from "../types/types";
+import { checkEatsFood } from "../utils/checkEatsFood";
+import { checkGameOver } from "../utils/checkGameOver";
+import { randomFoodPosition } from "../utils/randomFoodPosition";
+import Food from "./Food";
+import Header from "./Header";
+import Score from "./Score";
+import Snake from "./Snake";
 
 const snakeInitialPosition = [{x: 5, y: 5}];
 const foodInitialPosition = {x: 5, y: 5};
-const gameBounds = { xMin: 0, xMax: 34, yMin: 0, yMax: 61};
+const gameBounds = { xMin: 0, xMax: 35, yMin: 0, yMax: 63 };
 const moveInterval = 50;
 const scoreIncrement = 10;
 
 export default function Game(): JSX.Element {
-  const [ direction, setDirection ] = React.useState<Direction>(Direction.Right);
-  const [ snake, setSnake ] = React.useState<Coordinate[]>(snakeInitialPosition);
-  const [ food, setFood ] = React.useState<Coordinate>(foodInitialPosition);
-  const [ isGameOver, setIsGameOver ] = React.useState<boolean>(false);
-  const [ isPaused, setIsPaused ] = React.useState<boolean>(false);
-  const [ score, setScore ] = React.useState<number>(0);
+  const [ direction, setDirection ] = useState<Direction>(Direction.Right);
+  const [ snake, setSnake ] = useState<Coordinate[]>(snakeInitialPosition);
+  const [ food, setFood ] = useState<Coordinate>(foodInitialPosition);
+  const [ score, setScore ] = useState<number>(0);
+  const [ isGameOver, setIsGameOver ] = useState<boolean>(false);
+  const [ isPaused, setIsPaused ] = useState<boolean>(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if(!isGameOver) {
       const intervalId = setInterval(()=> {
         !isPaused && moveSnake();
@@ -36,7 +37,7 @@ export default function Game(): JSX.Element {
 
   const moveSnake = () => {
     const snakeHead = snake[0];
-    const newHead = { ...snakeHead }; //creating a copy of snake
+    const newHead = { ...snakeHead }; // create a new head object to avoid mutating the original head
 
     // game over
     if (checkGameOver(snakeHead, gameBounds)) {
@@ -61,7 +62,7 @@ export default function Game(): JSX.Element {
         break;
     }
 
-    // if eats food, grow snake and set score
+    // if eats food, grow snake and set scorer
     if(checkEatsFood(newHead, food, 2)){
       setFood(randomFoodPosition(gameBounds.xMax, gameBounds.yMax))
       setSnake([newHead, ...snake]);
@@ -106,21 +107,19 @@ export default function Game(): JSX.Element {
     <PanGestureHandler onGestureEvent={handleGesture}>
       <SafeAreaView style={styles.container}>
         <Header
-          isPaused={isPaused}
-          pauseGame={pauseGame}
           reloadGame={reloadGame}
+          pauseGame={pauseGame}
+          isPaused={isPaused}
         >
-          <Text style={styles.text}>
-            {score}
-          </Text>
+          <Score score={score} />
         </Header>
         <View style={styles.boundaries}>
-          <Snake snake={snake}/>
+          <Snake snake={snake} />
           <Food x={food.x} y={food.y} />
         </View>
       </SafeAreaView>
     </PanGestureHandler>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -135,10 +134,5 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     backgroundColor: Colors.background
-  },
-  text: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: Colors.primary
   }
 });
