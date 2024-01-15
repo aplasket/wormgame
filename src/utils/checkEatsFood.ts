@@ -10,5 +10,5 @@ export const checkEatsFood = (
 
   return (
     distanceBetweenFoodAndSnakeX < area && distanceBetweenFoodAndSnakeY < area
-  )
-}
+  );
+};
