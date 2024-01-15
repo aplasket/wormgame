@@ -11,8 +11,8 @@ import Header from "./Header";
 import Score from "./Score";
 import Snake from "./Snake";
 
-const snakeInitialPosition = [{x: 5, y: 5}];
-const foodInitialPosition = {x: 5, y: 5};
+const snakeInitialPosition = [{ x: 5, y: 5 }];
+const foodInitialPosition = { x: 5, y: 20 };
 const gameBounds = { xMin: 0, xMax: 33, yMin: 0, yMax: 53 };
 const moveInterval = 50;
 const scoreIncrement = 10;
