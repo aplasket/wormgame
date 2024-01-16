@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Dimensions, SafeAreaView, StyleSheet, View } from "react-native";
+import { Dimensions, Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Colors } from "../styles/colors";
 import { PanGestureHandler } from "react-native-gesture-handler";
 import { Coordinate, Direction, GestureEventType } from "../types/types";
@@ -12,7 +12,7 @@ import Score from "./Score";
 import Snake from "./Snake";
 
 const snakeInitialPosition = [{ x: 5, y: 5 }];
-const gameBounds = { xMin: 0, xMax: 33, yMin: 0, yMax: 53 };
+const gameBounds = { xMin: 0, xMax: 33, yMin: 0, yMax: 60 };
 const moveInterval = 50;
 const scoreIncrement = 10;
 
@@ -34,6 +34,7 @@ export default function Game(): JSX.Element {
   const [ isGameOver, setIsGameOver ] = useState<boolean>(false);
   const [ isPaused, setIsPaused ] = useState<boolean>(false);
   const [ fruitEmoji, setFruitEmoji ] = useState<string>(getRandomFruitEmoji())
+  const [isGameOverModalVisible, setIsGameOverModalVisible] = useState<boolean>(false);
 
   useEffect(() => {
     if(!isGameOver) {
@@ -51,6 +52,7 @@ export default function Game(): JSX.Element {
 
     if (checkGameOver(snakeHead, gameBounds)) {
       setIsGameOver((prev) => !prev);
+      showGameOverModal();
       return;
     }
 
@@ -113,6 +115,10 @@ export default function Game(): JSX.Element {
     setIsPaused(!isPaused);
   };
 
+  const showGameOverModal = () => {
+    setIsGameOverModalVisible(true);
+  };
+
   return (
     <PanGestureHandler onGestureEvent={handleGesture}>
       <SafeAreaView style={styles.container}>
@@ -129,6 +135,29 @@ export default function Game(): JSX.Element {
             {fruitEmoji}
           </Food>
         </View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={isGameOverModalVisible}
+          onRequestClose={() => {
+            setIsGameOverModalVisible(false);
+          }}
+        >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>Game Over</Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => {
+                reloadGame();
+                setIsGameOverModalVisible(false);
+              }}
+            >
+              <Text style={styles.modalButtonText}>Play Again</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       </SafeAreaView>
     </PanGestureHandler>
   );
@@ -146,5 +175,30 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     backgroundColor: Colors.background
-  }
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 24,
+    marginBottom: 10,
+  },
+  modalButton: {
+    backgroundColor: 'blue',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 18,
+  },
 });
